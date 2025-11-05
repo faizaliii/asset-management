@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disposal Report</title>
+</head>
+<body>
+    <h1>Disposal Report</h1>
+    <table>
+        <tr>
+            <th>Asset Name</th>
+            <th>Disposal Date</th>
+            <th>Reason</th>
+        </tr>
+        {% for asset in disposed_assets %}
+        <tr>
+            <td>{{ asset.name }}</td>
+            <td>{{ asset.disposal.disposal_date }}</td>
+            <td>{{ asset.disposal.reason }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">Back to Asset List</a>
+</body>
+</html>

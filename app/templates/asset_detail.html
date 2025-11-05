@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #barcode-section, #barcode-section * {
+                visibility: visible;
+            }
+            #barcode-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        function printBarcode() {
+            window.print();
+        }
+    </script>
+    <h1 class="mb-4">Asset Detail</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>{{ asset.name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Name:</strong> {{ asset.name }}</p>
+                    <p><strong>Type:</strong> {{ asset.type }}</p>
+                    <p><strong>Category:</strong> {{ asset.category.name }} ({{ asset.category.code }})</p>
+                    <p><strong>SubCategory:</strong> {{ asset.subcategory.name }} ({{ asset.subcategory.code }})</p>
+                    <p><strong>Location:</strong> {{ asset.location.name }} ({{ asset.location.code }})</p>
+                    <p><strong>SubLocation:</strong> {{ asset.sub_location.name }} ({{ asset.sub_location.code }})</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge badge-{% if asset.status == 'Active' %}success{% elif asset.status == 'Under Repair' %}warning{% else %}danger{% endif %}">
+                            {{ asset.status }}
+                        </span>
+                    </p>
+                    <p><strong>Serial Number:</strong> <code>{{ asset.serial_number }}</code></p>
+                    <p><strong>Depreciation:</strong> {{ asset.depreciation }}%</p>
+                    <p><strong>Purchased On:</strong> {{ asset.purchased_on }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Barcode</h4>
+                    <div id="barcode-section" class="text-center p-3 border" style="background-color: white;">
+                        <img src="{{ url_for('static', filename='barcodes/' + asset.serial_number + '.png') }}" alt="{{ asset.serial_number }}" class="img-fluid" style="max-width: 300px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <p style="display:none; color:red;">Barcode image not found. <a href="{{ url_for('regenerate_barcode', asset_id=asset.id) }}">Regenerate</a></p>
+                        <p class="mt-2"><strong>{{ asset.serial_number }}</strong></p>
+                    </div>
+                    <br>
+                    <button onclick="printBarcode()" class="btn btn-secondary">Print Barcode</button>
+                    <a href="{{ url_for('regenerate_barcode', asset_id=asset.id) }}" class="btn btn-sm btn-outline-info ml-2" title="Regenerate barcode if image is missing">Regenerate</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Move Asset</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('move_asset', asset_id=asset.id) }}" method="post">
+                <div class="form-group">
+                    <label for="new_location">New Location:</label>
+                    <select id="new_location" name="new_location" class="custom-select">
+                        {% for location in locations %}
+                        <option value="{{ location.id }}" {% if location.id == asset.location_id %}selected{% endif %}>{{ location.name }} ({{ location.code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new_sublocation">New SubLocation:</label>
+                    <select id="new_sublocation" name="new_sublocation" class="custom-select">
+                        {% for sublocation in sublocations %}
+                        <option value="{{ sublocation.id }}" {% if sublocation.id == asset.sublocation_id %}selected{% endif %}>{{ sublocation.name }} ({{ sublocation.code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Move Asset</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Schedule Maintenance</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('schedule_maintenance') }}" method="post">
+                <input type="hidden" name="asset_id" value="{{ asset.id }}">
+                <div class="form-group">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="type">Type:</label>
+                    <input type="text" id="type" name="type" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Schedule Maintenance</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <a href="{{ url_for('maintenance_history', asset_id=asset.id) }}" class="btn btn-info">View Maintenance History</a>
+        <a href="{{ url_for('edit_asset', asset_id=asset.id) }}" class="btn btn-warning">Edit Asset</a>
+        <a href="{{ url_for('list_assets') }}" class="btn btn-secondary">Back to Asset List</a>
+    </div>
+{% endblock %}

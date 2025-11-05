@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage SubCategories</title>
+</head>
+<body>
+    <h1>Manage SubCategories</h1>
+    <form action="" method="post">
+        <label for="subcategory_name">SubCategory Name:</label>
+        <input type="text" id="subcategory_name" name="subcategory_name">
+        <input type="submit" value="Add SubCategory">
+    </form>
+    <ul>
+        {% for subcategory in subcategories %}
+        <li>{{ subcategory.name }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}">Back to Asset List</a>
+</body>
+</html>

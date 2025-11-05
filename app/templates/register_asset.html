@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="mb-4">Register Asset</h1>
+    <form action="" method="post" class="needs-validation" novalidate>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+            <div class="invalid-feedback">Please enter the asset name.</div>
+        </div>
+        <div class="form-group">
+            <label for="type">Type:</label>
+            <input type="text" id="type" name="type" class="form-control" required>
+            <div class="invalid-feedback">Please enter the asset type.</div>
+        </div>
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category" class="custom-select" required>
+                <option value="">Select Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }} ({{ category.code }})</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a category.</div>
+        </div>
+        <div class="form-group">
+            <label for="subcategory">SubCategory:</label>
+            <select id="subcategory" name="subcategory" class="custom-select" required>
+                <option value="">Select SubCategory</option>
+                {% for subcategory in subcategories %}
+                <option value="{{ subcategory.id }}">{{ subcategory.name }} ({{ subcategory.code }})</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a subcategory.</div>
+        </div>
+        <div class="form-group">
+            <label for="location">Location:</label>
+            <select id="location" name="location" class="custom-select" required>
+                <option value="">Select Location</option>
+                {% for location in locations %}
+                <option value="{{ location.id }}">{{ location.name }} ({{ location.code }})</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a location.</div>
+        </div>
+        <div class="form-group">
+            <label for="sublocation">SubLocation:</label>
+            <select id="sublocation" name="sublocation" class="custom-select" required>
+                <option value="">Select SubLocation</option>
+                {% for sublocation in sublocations %}
+                <option value="{{ sublocation.id }}">{{ sublocation.name }} ({{ sublocation.code }})</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a sublocation.</div>
+        </div>
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" class="custom-select" required>
+                <option value="">Select Status</option>
+                <option value="Active">Active</option>
+                <option value="Under Repair">Under Repair</option>
+                <option value="Disposed">Disposed</option>
+            </select>
+            <div class="invalid-feedback">Please select a status.</div>
+        </div>
+        <div class="form-group">
+            <label for="depreciation">Depreciation (%):</label>
+            <input type="number" id="depreciation" name="depreciation" class="form-control" step="0.01" required>
+            <div class="invalid-feedback">Please enter the depreciation percentage.</div>
+        </div>
+        <div class="form-group">
+            <label for="purchased_on">Purchased On:</label>
+            <input type="date" id="purchased_on" name="purchased_on" class="form-control" required>
+            <div class="invalid-feedback">Please select the purchase date.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    <a href="{{ url_for('list_assets') }}" class="btn btn-outline-secondary mt-3">Back to Asset List</a>
+{% endblock %}

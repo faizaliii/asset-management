@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depreciation Summary</title>
+</head>
+<body>
+    <h1>Depreciation Summary</h1>
+    <table>
+        <tr>
+            <th>Asset Name</th>
+            <th>Purchase Price</th>
+            <th>Depreciation Value</th>
+            <th>Book Value</th>
+        </tr>
+        {% for item in depreciation_data %}
+        <tr>
+            <td>{{ item.asset.name }}</td>
+            <td>{{ item.asset.purchase_price }}</td>
+            <td>{{ item.depreciation_value }}</td>
+            <td>{{ item.book_value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">Back to Asset List</a>
+</body>
+</html>

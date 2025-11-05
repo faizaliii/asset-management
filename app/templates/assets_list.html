@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="mb-4">Assets</h1>
+
+    <form method="get" action="" class="mb-4">
+        <div class="row">
+            <div class="col-md-2 mb-2">
+                <label for="status">Status:</label>
+                <select id="status" name="status" class="custom-select">
+                    <option value="" {% if not request.args.get('status') %}selected{% endif %}>All</option>
+                    <option value="Active" {% if request.args.get('status') == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Under Repair" {% if request.args.get('status') == 'Under Repair' %}selected{% endif %}>Under Repair</option>
+                    <option value="Disposed" {% if request.args.get('status') == 'Disposed' %}selected{% endif %}>Disposed</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-2">
+                <label for="location">Location:</label>
+                <select id="location" name="location" class="custom-select">
+                    <option value="" {% if not request.args.get('location') %}selected{% endif %}>All</option>
+                    {% for location in locations %}
+                    <option value="{{ location.id }}" {% if request.args.get('location') == location.id|string %}selected{% endif %}>{{ location.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-2">
+                <label for="sublocation">SubLocation:</label>
+                <select id="sublocation" name="sublocation" class="custom-select">
+                    <option value="" {% if not request.args.get('sublocation') %}selected{% endif %}>All</option>
+                    {% for sublocation in sublocations %}
+                    <option value="{{ sublocation.id }}" {% if request.args.get('sublocation') == sublocation.id|string %}selected{% endif %}>{{ sublocation.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-2">
+                <label for="category">Category:</label>
+                <select id="category" name="category" class="custom-select">
+                    <option value="" {% if not request.args.get('category') %}selected{% endif %}>All</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if request.args.get('category') == category.id|string %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-2">
+                <label for="subcategory">SubCategory:</label>
+                <select id="subcategory" name="subcategory" class="custom-select">
+                    <option value="" {% if not request.args.get('subcategory') %}selected{% endif %}>All</option>
+                    {% for subcategory in subcategories %}
+                    <option value="{{ subcategory.id }}" {% if request.args.get('subcategory') == subcategory.id|string %}selected{% endif %}>{{ subcategory.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>SubCategory</th>
+                <th>Location</th>
+                <th>SubLocation</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr>
+                <td><a href="{{ url_for('asset_detail', asset_id=asset.id) }}">{{ asset.name }}</a></td>
+                <td>{{ asset.type }}</td>
+                <td>{{ asset.category.name }}</td>
+                <td>{{ asset.subcategory.name }}</td>
+                <td>{{ asset.location.name }}</td>
+                <td>{{ asset.sub_location.name }}</td>
+                <td>{{ asset.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('register_asset') }}" class="btn btn-success">Register New Asset</a>
+{% endblock %}
