@@ -1,4 +1,47 @@
-name,code,location_id
-SubLocation1,SL1,1
-SubLocation2,SL2,1
-SubLocation3,SL3,2
+name,code,location_code
+Access Control Area Lobby,ACA,GF
+Accounts Room,ACR,GF
+Accsess Penal Room,APR,GF
+Admin Room,ADR,GF
+Back Side of Building,BSB,GF
+Barber shop,BS,B1
+Boys Gym,BG,B1
+Cafeteria,CFT,B2
+Coffee Area,CFA,GF
+Conference Room,CFR,GF
+Construction Department,CST,GF
+Construction Room,CSR,GF
+Basement 1,BS1,B1
+Basement 2,BS2,B2
+Ground Floor,GF,GF
+Director Admin,DA,GF
+Director Admin Room,DAR,GF
+Doctor Room,DR,B1
+Dr. Room Sitting Area,DRS,B1
+Driver Room-1,DRR,B2
+Driver Room-2,DRR,B2
+Electric Room,ER,B1
+Electrical Team Store,ETS,B2
+Female Gym,FG,B1
+Gym Washroom,GYW,B1
+HA Meeting Room,HAM,GF
+HA Room,HAR,GF
+IT Department,ITD,GF
+IT HOD Room,ITH,GF
+IT Server Room,ITS,GF
+Kitchen,KTC,GF
+Large Breakout Area,LBA,GF
+Lift Lobby,LLB,B1
+Lift lobby Door Stair Side,LLS,B2
+Looker Room,LOR,B1
+Marketing Department,MKD,GF
+Marketing Meeting Room,MMR,GF
+Mosque,MSQ,B1
+Open Area,OA,B1
+Panel Room,PR,B1
+Security Office,SO,B1
+Staff Dining Area,SDA,B2
+Stair Ways,SW,B1
+Store,STR,B1
+Store Under Ramp,SUR,B2
+Third party driver room,TPD,B2

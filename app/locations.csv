@@ -1,4 +1,24 @@
 name,code
-Basement 1,B1
-Basement 2,B2
-Ground Floor,GF
+"Basement 1, D.Tower",B1
+"Basement 2, D.Tower",B2
+"Ground Floor, D.Tower",GF
+"First Floor, D.Tower",F1
+"Second Floor, D.Tower",F2
+"Third Floor, D.Tower",F3
+"Fourth Floor, D.Tower",F4
+"Fifth Floor, D.Tower",F5
+"Sixth Floor, D.Tower",F6
+"Seventh Floor, D.Tower",F7
+"Eighth Floor, D.Tower",F8
+"Ground Floor, Boys Hostel",BHGF
+"First Floor, Boys Hostel",BHF1
+"Second Floor, Boys Hostel",BHF2
+"Third Floor, Boys Hostel",BHF3
+"Fourth Floor, Boys Hostel",BHF4
+"Ground Floor, Girls Hostel",GHGF
+"First Floor, Girls Hostel",GHF1
+"Basement 1, Guest House",GUB1
+"Ground Floor, Guest House",GUGF
+"First Floor, Guest House",GUF1
+"Second Floor, Guest House",GUF2
+"Devsinc, LHR",DL

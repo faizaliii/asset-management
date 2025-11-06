@@ -1,4 +1,192 @@
-name,code,category_id
-Computers,COMP,1
-Tables,TABL,2
-Refrigerators,REFR,3
+name,code,category_code
+Abs Roller,ARL,GM
+Air Conditioner,AC,EI
+Air Cooler,ACR,EA
+Air Cutter,ACT,EA
+Air Dispenser,ADP,SA
+Air Purifier,APF,EA
+Air Rowing,ARW,GM
+Amplifier,AMP,AV
+Ankle Straps,AKS,GM
+Apple Device,APD,MA
+Ash Tray,AST,SA
+Bar Locks,BLK,GM
+Barcode Reader,BCR,CA
+Barrier,BRR,EI
+Bathroom Lavatory,BLV,FF
+Batteries,BAT,EA
+Bean Bag,BBG,FR
+Bed & Side Table,BST,FR
+Belt,BLT,GM
+Blender,BLD,KC
+"Blinders, Curtains, & Bed Sheets",BCB,CC
+Bosu Ball,BBL,GM
+Bracket Fans,BFN,EA
+Bread Toaster,BTR,EA
+Bunk Bed (Charpai),BB,FR
+Button & Plug Board,BPB,EI
+Cabinet & Shelves,CBS,FR
+Cable Rowing Machine,CRM,GM
+Cafe Chair,CFC,FR
+Camera,CAM,AV
+Card Scanner,CSC,CA
+Carpet,CPT,FF
+Cash Counting Machine,CCM,EA
+Cash Locker,CLK,OE
+Ceiling,CEL,FF
+Ceiling Fan,CFN,EA
+Chairs,CHR,FR
+Chimney,CHM,KC
+Chin Up Bar Machine,CUB,GM
+Coat Hanger,CHG,FR
+Coat Hook,CHK,FR
+Coffee Beater,CFB,KC
+Coffee Maker,CFM,KC
+Cold Storage,CLS,KC
+Crockery,CRK,KC
+Crossover Machine,CSM,GM
+Cycle,CYC,AM
+Cycling Machine,CYM,GM
+DB & Panels,DBP,EI
+Digital Weight Scale,DWS,EA
+Water Dispenser,WDP,EA
+Door ,DOR,FF
+Double Side Table 2 Seater,DST,FR
+Dumbbells,DBL,GM
+DVR,DVR,AV
+DVR Box,DVX,AV
+Electric Geyser,EGZ,EA
+Electric Heater,EHT,EI
+Electric Insect Killer,EIK,EA
+Electric Kettle,EKT,EA
+Electrostatic Sheet,ESS,EI
+Elevators,ELV,EI
+Elliptical Machine,ELM,GM
+Executive Chair,EXC,FR
+Executive Table,EXT,FR
+Exhaust Fan,EXF,EA
+Extension Lead,EXL,EA
+EZ Bar,EZB,GM
+Face/IO Plate,FIP,CA
+Face Scanner,FSC,EA
+Fan Driver Board,FDB,EI
+Fans,FAN,EA
+Feature & Decors,FDC,OE
+Fence,FNC,FF
+Filter Plant,FLP,EI
+Fire Alarm,FAL,FS
+Fire Blanket,FBL,FS
+Fire Extinguisher,FEX,FS
+Fire Hose Reel,FHR,FS
+Fire Sounder,FSD,FS
+First Aid Box,FAB,SA
+Flap Barrier,FLB,EI
+Footrest,FRS,SA
+Functional Trainer Machine,FTM,GM
+Sports & Games,SAG,SA
+Gas Cylinder,GCL,KC
+"Generator, UPS & Backup",GUB,EI
+Guard Cabin,GCB,FF
+Gym Bench,GMB,GM
+Hair Dryer,HDR,EA
+Hardware,HDW,EI
+HDMI Cable,HDC,CA
+Hexa Bar,HXB,GM
+Hydrant Pump,HYP,FS
+Insect Killer,INK,EA
+Intercom,ICM,AV
+Internet Device,IND,CA
+Iron,IRN,EA
+Iron Clip,ICP,GM
+Iron Shoe Stand,ISS,FR
+Iron Stand,ISD,FR
+Kick Boxing Bag,KBB,GM
+Kitchen Appliances ,KAP,KC
+Ladder/Stairs,LDS,FF
+Lamps,LMP,EA
+Lats Variable Grip Machine,LVM,GM
+LED TV,LTV,EA
+LED Stand/Table,LST,FR
+LED Bulb,LBL,EA
+LED Light,LLG,EA
+Leg Curl Machine,LCM,GM
+Leg Extension Machine,LEM,GM
+Leg Press Machine,LPM,GM
+Leg Pull Down Machine,LPD,GM
+Light Stand,LSD,FR
+Lights,LIG,EA
+Logos & Branding,LOB,OE
+Loop Bands,LBD,GM
+"Mattresses, Comforter & Cushions",MCC,CC
+Medicine Ball,MDB,GM
+Microwave Oven,MWO,KC
+Mirror,MIR,FF
+Mobile Phones,MPH,MA
+Motorbike,MBK,AM
+Neck Support,NSP,GM
+Networking Box,NTB,CA
+Notice Board,NBD,OE
+Olympic Bar,OLB,GM
+Paper Crusher/Shredder,PCS,EA
+PCB Card,PCB,CA
+Pec Dec Flies,PDF,GM
+Plastic Chair,PLC,FR
+Plastic Clip,PCL,GM
+Power Cable,PWC,EI
+Power Rack,PRK,GM
+Prayer Mat,PRM,SA
+Pressure Motor,PMT,EI
+Printers,PRN,CA
+Stablizers,STB,EA
+Public Announcement system,PAS,AV
+PVC Mat,PVC,SA
+Record Roulette,RRL,SA
+Recumbent Bike,RCB,GM
+Refrigerator ,RFR,KC
+Remote,RMT,AV
+Rod,ROD,FF
+Sign Plate,SGP,OE
+Skipping Rope,SKR,GM
+SMD Light,SMD,EA
+Smoke Controller Box,SCB,FS
+Sofas,SFA,FR
+Sound System,SDS,AV
+Stepper,STP,GM
+Stool,STL,FR
+Storage Basket,SBK,SA
+Straight Bar,STR,GM
+Sub Meter,SBM,EI
+Swings,SWG,SA
+Tables,TBL,FR
+Telephone Extension,TPE,AV
+Tissue Dispenser,TSD,SA
+Tissue roll Holder,TRH,SA
+Tool Box,TBX,GM
+Transfarmer,TRF,EI
+Treadmill,TML,GM
+Trolly,TRY,SA
+Vacuum Cleaner,VCL,EA
+Video Recorder,VDR,AV
+VRF,VRF,EI
+VRF Ducting,VRD,EI
+Walk Through Gate,WTG,EI
+Wall Clock,WCK,OE
+Wall Glass Board,WGB,OE
+Wall Partition,WPT,FF
+Washing Machine,WSM,KC
+Water Motor,WMT,EI
+Water Pipe,WPP,EI
+Weight Machine,WGM,GM
+Weight Plate,WGP,GM
+Workstation Table,WST,FR
+Writing Board,WRB,OE
+Yoga Mat,YMT,GM
+Dust Bin,DBN,SA
+Smoke Detector,SMDT,FS
+Vaporizer ,VPR,EI
+Power Banks,PBK,EA
+Stairs,STRS,FF
+Mobile Phone Stands/Stablizers,MPS,MA
+Hangers,HNG,FR
+Dryer Machine,DRM,KC
+Car & Others,CAR,AM

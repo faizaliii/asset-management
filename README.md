@@ -115,7 +115,7 @@ set FLASK_APP=app
 Start the Flask development server:
 
 ```bash
-flask run --port=5002
+flask run --port=5000
 ```
 
 Or use the run.py file:
@@ -123,13 +123,13 @@ Or use the run.py file:
 python run.py
 ```
 
-The application will be available at: **http://127.0.0.1:5002**
+The application will be available at: **http://127.0.0.1:5000**
 
 ### 8. Access the Application
 
 Open your web browser and navigate to:
 ```
-http://127.0.0.1:5002
+http://127.0.0.1:5000
 ```
 
 ## Project Structure
@@ -218,16 +218,16 @@ Use the filter dropdowns on the asset list page to filter by:
 
 ### Port Already in Use
 
-If port 5002 is already in use, you can:
+If port 5000 is already in use, you can:
 
 1. **Kill the process using the port:**
    ```bash
-   lsof -ti:5002 | xargs kill -9
+   lsof -ti:5000 | xargs kill -9
    ```
 
 2. **Use a different port:**
    ```bash
-   flask run --port=5003
+   flask run --port=5001
    ```
 
 ### Database Errors
@@ -270,7 +270,7 @@ For development with auto-reload:
 ```bash
 export FLASK_APP=app
 export FLASK_ENV=development
-flask run --port=5002
+flask run --port=5000
 ```
 
 Or edit `run.py` to set `debug=True`.
@@ -282,7 +282,7 @@ For production deployment on shared hosting (like Hostinger or GoDaddy):
 1. **Use a production WSGI server** like Gunicorn:
    ```bash
    pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:5002 app:app
+   gunicorn -w 4 -b 0.0.0.0:5000 app:app
    ```
 
 2. **Change secret key** to a secure random string
@@ -297,7 +297,7 @@ source venv/bin/activate  # macOS/Linux
 venv\Scripts\activate     # Windows
 
 # Run application
-flask run --port=5002
+flask run --port=5000
 
 # Initialize database
 python app/scripts/init_db.py
