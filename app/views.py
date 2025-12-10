@@ -476,7 +476,8 @@ def setup():
         return "Invalid setup token. Set SETUP_TOKEN environment variable.", 403
     
     try:
-        # Initialize database
+        # Drop and recreate all tables to ensure schema is up to date
+        db.drop_all()
         db.create_all()
         
         # Load locations
@@ -551,3 +552,77 @@ def setup():
         """
     except Exception as e:
         return f"Error during setup: {str(e)}", 500
+
+@app.route('/migrate', methods=['GET'])
+def migrate():
+    """Migration endpoint - recreate tables with updated schema"""
+    setup_token = request.args.get('token', '')
+    expected_token = os.environ.get('SETUP_TOKEN', 'setup123')
+    
+    if setup_token != expected_token:
+        return "Invalid setup token.", 403
+    
+    try:
+        # Drop and recreate all tables to match current models
+        db.drop_all()
+        db.create_all()
+        
+        # Reload data
+        import csv
+        from .models import Location, SubLocation, Category, SubCategory, User
+        
+        # Load locations
+        locations_file = os.path.join(os.path.dirname(__file__), 'locations.csv')
+        if os.path.exists(locations_file):
+            with open(locations_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    db.session.add(Location(name=row['name'], code=row['code']))
+        
+        # Load categories
+        categories_file = os.path.join(os.path.dirname(__file__), 'categories.csv')
+        if os.path.exists(categories_file):
+            with open(categories_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    db.session.add(Category(name=row['name'], code=row['code']))
+        
+        # Load sublocations
+        sublocations_file = os.path.join(os.path.dirname(__file__), 'sublocations.csv')
+        if os.path.exists(sublocations_file):
+            with open(sublocations_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    location = Location.query.filter_by(id=int(row['location_id'])).first()
+                    if location:
+                        db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+        
+        # Load subcategories
+        subcategories_file = os.path.join(os.path.dirname(__file__), 'subcategories.csv')
+        if os.path.exists(subcategories_file):
+            with open(subcategories_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    category = Category.query.filter_by(id=int(row['category_id'])).first()
+                    if category:
+                        db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+        
+        # Recreate users
+        users_data = [
+            ('admin', 'admin123', 'admin'),
+            ('user1', 'password1', 'member'),
+            ('user2', 'password2', 'member'),
+            ('manager', 'manager123', 'member'),
+            ('staff', 'staff123', 'member'),
+        ]
+        
+        for username, password, role in users_data:
+            user = User(username=username, role=role)
+            user.set_password(password)
+            db.session.add(user)
+        
+        db.session.commit()
+        
+        return "Migration successful: Database recreated with updated schema. <a href='/login'>Go to Login</a>"
+    except Exception as e:
+        return f"Migration error: {str(e)}", 500
