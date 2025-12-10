@@ -461,3 +461,93 @@ def depreciation_summary():
 def disposal_report():
     disposed_assets = Asset.query.filter_by(status='Disposed').all()
     return render_template('disposal_report.html', disposed_assets=disposed_assets)
+
+@app.route('/setup', methods=['GET', 'POST'])
+def setup():
+    """One-time setup endpoint - initialize database and load data"""
+    import csv
+    from .models import Location, SubLocation, Category, SubCategory, User
+    
+    # Simple security - check for setup token or allow only if no users exist
+    setup_token = request.args.get('token') or request.form.get('token')
+    expected_token = os.environ.get('SETUP_TOKEN', 'setup123')
+    
+    if setup_token != expected_token:
+        return "Invalid setup token. Set SETUP_TOKEN environment variable.", 403
+    
+    try:
+        # Initialize database
+        db.create_all()
+        
+        # Load locations
+        locations_file = os.path.join(os.path.dirname(__file__), 'locations.csv')
+        if os.path.exists(locations_file):
+            with open(locations_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if not Location.query.filter_by(code=row['code']).first():
+                        db.session.add(Location(name=row['name'], code=row['code']))
+        
+        # Load categories
+        categories_file = os.path.join(os.path.dirname(__file__), 'categories.csv')
+        if os.path.exists(categories_file):
+            with open(categories_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if not Category.query.filter_by(code=row['code']).first():
+                        db.session.add(Category(name=row['name'], code=row['code']))
+        
+        # Load sublocations
+        sublocations_file = os.path.join(os.path.dirname(__file__), 'sublocations.csv')
+        if os.path.exists(sublocations_file):
+            with open(sublocations_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if not SubLocation.query.filter_by(code=row['code']).first():
+                        location = Location.query.filter_by(id=int(row['location_id'])).first()
+                        if location:
+                            db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+        
+        # Load subcategories
+        subcategories_file = os.path.join(os.path.dirname(__file__), 'subcategories.csv')
+        if os.path.exists(subcategories_file):
+            with open(subcategories_file, 'r') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if not SubCategory.query.filter_by(code=row['code']).first():
+                        category = Category.query.filter_by(id=int(row['category_id'])).first()
+                        if category:
+                            db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+        
+        # Create users
+        users_data = [
+            ('admin', 'admin123', 'admin'),
+            ('user1', 'password1', 'member'),
+            ('user2', 'password2', 'member'),
+            ('manager', 'manager123', 'member'),
+            ('staff', 'staff123', 'member'),
+        ]
+        
+        for username, password, role in users_data:
+            if not User.query.filter_by(username=username).first():
+                user = User(username=username, role=role)
+                user.set_password(password)
+                db.session.add(user)
+        
+        db.session.commit()
+        
+        return """
+        <h1>Setup Complete!</h1>
+        <p>Database initialized successfully.</p>
+        <p>Default users created:</p>
+        <ul>
+            <li>admin / admin123 (Admin)</li>
+            <li>user1 / password1 (Member)</li>
+            <li>user2 / password2 (Member)</li>
+            <li>manager / manager123 (Member)</li>
+            <li>staff / staff123 (Member)</li>
+        </ul>
+        <p><a href="/login">Go to Login</a></p>
+        """
+    except Exception as e:
+        return f"Error during setup: {str(e)}", 500
