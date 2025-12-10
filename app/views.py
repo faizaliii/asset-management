@@ -575,76 +575,85 @@ def migrate():
     
     try:
         # Drop and recreate all tables to match current models
-        db.drop_all()
-        db.create_all()
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
         
         # Reload data
         import csv
         from .models import Location, SubLocation, Category, SubCategory, User
         
-        # Load locations
-        locations_file = os.path.join(os.path.dirname(__file__), 'locations.csv')
-        if os.path.exists(locations_file):
-            with open(locations_file, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    db.session.add(Location(name=row['name'], code=row['code']))
+        with app.app_context():
+            # Load locations
+            locations_file = os.path.join(os.path.dirname(__file__), 'locations.csv')
+            if os.path.exists(locations_file):
+                with open(locations_file, 'r') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        db.session.add(Location(name=row['name'], code=row['code']))
+            
+            # Load categories
+            categories_file = os.path.join(os.path.dirname(__file__), 'categories.csv')
+            if os.path.exists(categories_file):
+                with open(categories_file, 'r') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        db.session.add(Category(name=row['name'], code=row['code']))
+            
+            # Commit locations and categories first so we can reference them
+            db.session.commit()
+            
+            # Load sublocations (after locations are loaded)
+            sublocations_file = os.path.join(os.path.dirname(__file__), 'sublocations.csv')
+            if os.path.exists(sublocations_file):
+                with open(sublocations_file, 'r') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        try:
+                            # CSV uses location_code, not location_id
+                            location = Location.query.filter_by(code=row['location_code']).first()
+                            if location:
+                                db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+                        except (KeyError, ValueError) as e:
+                            print(f"Skipping sublocation row: {e}")
+            
+            # Load subcategories (after categories are loaded)
+            subcategories_file = os.path.join(os.path.dirname(__file__), 'subcategories.csv')
+            if os.path.exists(subcategories_file):
+                with open(subcategories_file, 'r') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        try:
+                            # CSV uses category_code, not category_id
+                            category = Category.query.filter_by(code=row['category_code']).first()
+                            if category:
+                                db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+                        except (KeyError, ValueError) as e:
+                            print(f"Skipping subcategory row: {e}")
+            
+            # Recreate users
+            users_data = [
+                ('admin', 'admin123', 'admin'),
+                ('user1', 'password1', 'member'),
+                ('user2', 'password2', 'member'),
+                ('manager', 'manager123', 'member'),
+                ('staff', 'staff123', 'member'),
+            ]
+            
+            for username, password, role in users_data:
+                user = User(username=username, role=role)
+                user.set_password(password)
+                db.session.add(user)
+            
+            db.session.commit()
         
-        # Load categories
-        categories_file = os.path.join(os.path.dirname(__file__), 'categories.csv')
-        if os.path.exists(categories_file):
-            with open(categories_file, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    db.session.add(Category(name=row['name'], code=row['code']))
-        
-        # Commit locations and categories first so we can reference them
-        db.session.commit()
-        
-        # Load sublocations (after locations are loaded)
-        sublocations_file = os.path.join(os.path.dirname(__file__), 'sublocations.csv')
-        if os.path.exists(sublocations_file):
-            with open(sublocations_file, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    try:
-                        # CSV uses location_code, not location_id
-                        location = Location.query.filter_by(code=row['location_code']).first()
-                        if location:
-                            db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
-                    except (KeyError, ValueError) as e:
-                        print(f"Skipping sublocation row: {e}")
-        
-        # Load subcategories (after categories are loaded)
-        subcategories_file = os.path.join(os.path.dirname(__file__), 'subcategories.csv')
-        if os.path.exists(subcategories_file):
-            with open(subcategories_file, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    try:
-                        # CSV uses category_code, not category_id
-                        category = Category.query.filter_by(code=row['category_code']).first()
-                        if category:
-                            db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
-                    except (KeyError, ValueError) as e:
-                        print(f"Skipping subcategory row: {e}")
-        
-        # Recreate users
-        users_data = [
-            ('admin', 'admin123', 'admin'),
-            ('user1', 'password1', 'member'),
-            ('user2', 'password2', 'member'),
-            ('manager', 'manager123', 'member'),
-            ('staff', 'staff123', 'member'),
-        ]
-        
-        for username, password, role in users_data:
-            user = User(username=username, role=role)
-            user.set_password(password)
-            db.session.add(user)
-        
-        db.session.commit()
-        
-        return "Migration successful: Database recreated with updated schema. <a href='/login'>Go to Login</a>"
+        return """
+        <h1>Migration Successful!</h1>
+        <p>Database recreated with updated schema (including barcode_url column).</p>
+        <p>All data has been reloaded.</p>
+        <p><a href="/login">Go to Login</a></p>
+        """
     except Exception as e:
-        return f"Migration error: {str(e)}", 500
+        import traceback
+        error_details = traceback.format_exc()
+        return f"<h1>Migration Error</h1><pre>{str(e)}\n\n{error_details}</pre>", 500
