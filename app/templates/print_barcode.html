@@ -41,7 +41,11 @@
 </head>
 <body>
     <div class="barcode-container">
-        <img src="{{ url_for('static', filename='barcodes/' + asset.serial_number + '.png') }}" alt="{{ asset.serial_number }}" class="barcode-image" onerror="this.style.display='none'; alert('Barcode image not found. Please regenerate barcode first.');">
+                {% if asset.barcode_url %}
+                    <img src="{{ asset.barcode_url }}" alt="{{ asset.serial_number }}" class="barcode-image" onerror="this.style.display='none'; alert('Barcode image not found. Please regenerate barcode first.');">
+                {% else %}
+                    <p style="color:red;">Barcode not generated. Please regenerate barcode first.</p>
+                {% endif %}
         <div class="serial-number">{{ asset.serial_number }}</div>
         <div class="asset-name">{{ asset.name }}</div>
     </div>

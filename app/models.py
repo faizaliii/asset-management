@@ -56,6 +56,7 @@ class Asset(db.Model):
     assigned_to = db.Column(db.String(100))
     purchased_on = db.Column(db.Date, nullable=False)
     serial_number = db.Column(db.String(100), unique=True, nullable=False)
+    barcode_url = db.Column(db.String(500))  # URL to barcode image in cloud storage
     unit_of_measure = db.Column(db.String(10), default='number')  # ft., sqft., number, tr.
     quantity = db.Column(db.Float, default=1.0)
     

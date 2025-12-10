@@ -1,14 +1,12 @@
-from flask import render_template, request, redirect, url_for, flash, current_app, session
+from flask import render_template, request, redirect, url_for, flash, current_app, session, send_from_directory
 from functools import wraps
 from . import app
 from .models import db, Asset, Location, SubLocation, Category, SubCategory, AssetMovement, Maintenance, Disposal, AssetHistory, User
+from .storage import storage
 from sqlalchemy.exc import IntegrityError
 import os
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-
-from barcode import Code128
-from barcode.writer import ImageWriter
 
 # Login required decorator
 def login_required(f):
@@ -174,21 +172,8 @@ def register_asset():
             serial_suffix = str(existing_assets + 1).zfill(5)  # 5 digits instead of 3
             serial_number = f"{location_code}-{category_code}-{subcategory_code}-{serial_suffix}"
 
-            # Generate Barcode
-            try:
-                # Get the directory where this file is located
-                app_dir = os.path.dirname(os.path.abspath(__file__))
-                barcode_dir = os.path.join(app_dir, 'static', 'barcodes')
-                os.makedirs(barcode_dir, exist_ok=True)
-                # Save without extension - the library will add it
-                barcode_path = os.path.join(barcode_dir, serial_number)
-                code128 = Code128(serial_number, writer=ImageWriter())
-                code128.save(barcode_path)
-            except Exception as barcode_error:
-                # Log barcode error but don't fail asset creation
-                print(f"Barcode generation error: {str(barcode_error)}")
-                # Continue without barcode for now
-                pass
+            # Generate and store barcode
+            barcode_url = storage.generate_and_store(serial_number)
 
             # Create new Asset
             new_asset = Asset(
@@ -200,6 +185,7 @@ def register_asset():
                 status=status,
                 purchased_on=purchased_on,
                 serial_number=serial_number,
+                barcode_url=barcode_url,
                 assigned_to=assigned_to,
                 unit_of_measure=unit_of_measure,
                 quantity=quantity
@@ -380,20 +366,13 @@ def move_asset(asset_id):
                 )
                 db.session.add(history)
                 
-                # Regenerate barcode
-                app_dir = os.path.dirname(os.path.abspath(__file__))
-                barcode_dir = os.path.join(app_dir, 'static', 'barcodes')
-                os.makedirs(barcode_dir, exist_ok=True)
+                # Delete old barcode
+                if asset.barcode_url:
+                    storage.delete(asset.barcode_url)
                 
-                # Remove old barcode if exists
-                old_barcode_path = os.path.join(barcode_dir, f'{old_serial_number}.png')
-                if os.path.exists(old_barcode_path):
-                    os.remove(old_barcode_path)
-                
-                # Generate new barcode
-                barcode_path = os.path.join(barcode_dir, new_serial_number)
-                code128 = Code128(new_serial_number, writer=ImageWriter())
-                code128.save(barcode_path)
+                # Generate and store new barcode
+                new_barcode_url = storage.generate_and_store(new_serial_number)
+                asset.barcode_url = new_barcode_url
                 
             except Exception as barcode_error:
                 print(f"Barcode generation error: {str(barcode_error)}")
@@ -448,18 +427,18 @@ def maintenance_history(asset_id):
 def regenerate_barcode(asset_id):
     asset = Asset.query.get_or_404(asset_id)
     try:
-        # Get the directory where this file is located
-        app_dir = os.path.dirname(os.path.abspath(__file__))
-        barcode_dir = os.path.join(app_dir, 'static', 'barcodes')
-        os.makedirs(barcode_dir, exist_ok=True)
+        # Delete old barcode if exists
+        if asset.barcode_url:
+            storage.delete(asset.barcode_url)
         
-        # Generate barcode
-        barcode_path = os.path.join(barcode_dir, asset.serial_number)
-        code128 = Code128(asset.serial_number, writer=ImageWriter())
-        code128.save(barcode_path)
+        # Generate and store new barcode
+        new_barcode_url = storage.generate_and_store(asset.serial_number)
+        asset.barcode_url = new_barcode_url
+        db.session.commit()
         
         flash('Barcode regenerated successfully!', 'success')
     except Exception as e:
+        db.session.rollback()
         flash(f'Error regenerating barcode: {str(e)}', 'error')
     
     return redirect(url_for('asset_detail', asset_id=asset_id))
