@@ -498,27 +498,38 @@ def setup():
                     if not Category.query.filter_by(code=row['code']).first():
                         db.session.add(Category(name=row['name'], code=row['code']))
         
-        # Load sublocations
+        # Commit locations and categories first so we can reference them
+        db.session.commit()
+        
+        # Load sublocations (after locations are loaded)
         sublocations_file = os.path.join(os.path.dirname(__file__), 'sublocations.csv')
         if os.path.exists(sublocations_file):
             with open(sublocations_file, 'r') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    if not SubLocation.query.filter_by(code=row['code']).first():
-                        location = Location.query.filter_by(id=int(row['location_id'])).first()
-                        if location:
-                            db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+                    try:
+                        if not SubLocation.query.filter_by(code=row['code']).first():
+                            # CSV uses location_code, not location_id
+                            location = Location.query.filter_by(code=row['location_code']).first()
+                            if location:
+                                db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+                    except (KeyError, ValueError) as e:
+                        print(f"Skipping sublocation row: {e}")
         
-        # Load subcategories
+        # Load subcategories (after categories are loaded)
         subcategories_file = os.path.join(os.path.dirname(__file__), 'subcategories.csv')
         if os.path.exists(subcategories_file):
             with open(subcategories_file, 'r') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    if not SubCategory.query.filter_by(code=row['code']).first():
-                        category = Category.query.filter_by(id=int(row['category_id'])).first()
-                        if category:
-                            db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+                    try:
+                        if not SubCategory.query.filter_by(code=row['code']).first():
+                            # CSV uses category_code, not category_id
+                            category = Category.query.filter_by(code=row['category_code']).first()
+                            if category:
+                                db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+                    except (KeyError, ValueError) as e:
+                        print(f"Skipping subcategory row: {e}")
         
         # Create users
         users_data = [
@@ -587,25 +598,36 @@ def migrate():
                 for row in reader:
                     db.session.add(Category(name=row['name'], code=row['code']))
         
-        # Load sublocations
+        # Commit locations and categories first so we can reference them
+        db.session.commit()
+        
+        # Load sublocations (after locations are loaded)
         sublocations_file = os.path.join(os.path.dirname(__file__), 'sublocations.csv')
         if os.path.exists(sublocations_file):
             with open(sublocations_file, 'r') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    location = Location.query.filter_by(id=int(row['location_id'])).first()
-                    if location:
-                        db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+                    try:
+                        # CSV uses location_code, not location_id
+                        location = Location.query.filter_by(code=row['location_code']).first()
+                        if location:
+                            db.session.add(SubLocation(name=row['name'], code=row['code'], location_id=location.id))
+                    except (KeyError, ValueError) as e:
+                        print(f"Skipping sublocation row: {e}")
         
-        # Load subcategories
+        # Load subcategories (after categories are loaded)
         subcategories_file = os.path.join(os.path.dirname(__file__), 'subcategories.csv')
         if os.path.exists(subcategories_file):
             with open(subcategories_file, 'r') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    category = Category.query.filter_by(id=int(row['category_id'])).first()
-                    if category:
-                        db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+                    try:
+                        # CSV uses category_code, not category_id
+                        category = Category.query.filter_by(code=row['category_code']).first()
+                        if category:
+                            db.session.add(SubCategory(name=row['name'], code=row['code'], category_id=category.id))
+                    except (KeyError, ValueError) as e:
+                        print(f"Skipping subcategory row: {e}")
         
         # Recreate users
         users_data = [
