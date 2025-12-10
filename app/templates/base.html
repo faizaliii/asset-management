@@ -7,6 +7,27 @@
     <title>Asset Manager</title>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('list_assets') }}">Asset Manager</a>
+            <div class="navbar-nav ml-auto">
+                {% if session.get('user_id') %}
+                    <span class="navbar-text mr-3">
+                        Logged in as: <strong>{{ session.get('username') }}</strong>
+                        {% if session.get('role') == 'admin' %}
+                            <span class="badge badge-warning ml-2">Admin</span>
+                        {% else %}
+                            <span class="badge badge-info ml-2">Member</span>
+                        {% endif %}
+                    </span>
+                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a class="btn btn-outline-light btn-sm mr-2" href="{{ url_for('login') }}">Login</a>
+                    <a class="btn btn-light btn-sm" href="{{ url_for('signup') }}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
     <div class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

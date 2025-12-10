@@ -14,17 +14,34 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="type">Type:</label>
-                    <input type="text" id="type" name="type" class="form-control" value="{{ asset.type }}" required>
-                </div>
-
-                <div class="form-group">
                     <label for="status">Status:</label>
                     <select id="status" name="status" class="custom-select" required>
                         <option value="Active" {% if asset.status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="Free" {% if asset.status == 'Free' %}selected{% endif %}>Free</option>
                         <option value="Under Repair" {% if asset.status == 'Under Repair' %}selected{% endif %}>Under Repair</option>
                         <option value="Disposed" {% if asset.status == 'Disposed' %}selected{% endif %}>Disposed</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="assigned_to">Assigned To:</label>
+                    <input type="text" id="assigned_to" name="assigned_to" class="form-control" value="{{ asset.assigned_to or '' }}" placeholder="Department/Person name">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="unit_of_measure">Unit of Measure:</label>
+                        <select id="unit_of_measure" name="unit_of_measure" class="custom-select">
+                            <option value="number" {% if asset.unit_of_measure == 'number' %}selected{% endif %}>Number</option>
+                            <option value="ft." {% if asset.unit_of_measure == 'ft.' %}selected{% endif %}>ft.</option>
+                            <option value="sqft." {% if asset.unit_of_measure == 'sqft.' %}selected{% endif %}>sqft.</option>
+                            <option value="tr." {% if asset.unit_of_measure == 'tr.' %}selected{% endif %}>tr.</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" class="form-control" step="0.01" value="{{ asset.quantity or 1.0 }}" min="0">
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Update Asset</button>

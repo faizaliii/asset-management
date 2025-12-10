@@ -10,7 +10,7 @@
     <table>
         <tr>
             <th>Name</th>
-            <th>Type</th>
+            <th>Category</th>
             <th>Location</th>
             <th>SubLocation</th>
             <th>Status</th>
@@ -18,7 +18,7 @@
         {% for asset in assets %}
         <tr>
             <td>{{ asset.name }}</td>
-            <td>{{ asset.type }}</td>
+            <td>{{ asset.category.name }}</td>
             <td>{{ asset.location.name }}</td>
             <td>{{ asset.sub_location.name }}</td>
             <td>{{ asset.status }}</td>

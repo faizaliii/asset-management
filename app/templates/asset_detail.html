@@ -31,18 +31,19 @@
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Name:</strong> {{ asset.name }}</p>
-                    <p><strong>Type:</strong> {{ asset.type }}</p>
                     <p><strong>Category:</strong> {{ asset.category.name }} ({{ asset.category.code }})</p>
                     <p><strong>SubCategory:</strong> {{ asset.subcategory.name }} ({{ asset.subcategory.code }})</p>
                     <p><strong>Location:</strong> {{ asset.location.name }} ({{ asset.location.code }})</p>
                     <p><strong>SubLocation:</strong> {{ asset.sub_location.name }} ({{ asset.sub_location.code }})</p>
                     <p><strong>Status:</strong> 
-                        <span class="badge badge-{% if asset.status == 'Active' %}success{% elif asset.status == 'Under Repair' %}warning{% else %}danger{% endif %}">
+                        <span class="badge badge-{% if asset.status == 'Active' %}success{% elif asset.status == 'Free' %}info{% elif asset.status == 'Under Repair' %}warning{% else %}danger{% endif %}">
                             {{ asset.status }}
                         </span>
                     </p>
                     <p><strong>Serial Number:</strong> <code>{{ asset.serial_number }}</code></p>
-                    <p><strong>Depreciation:</strong> {{ asset.depreciation }}%</p>
+                    <p><strong>Assigned To:</strong> {{ asset.assigned_to or 'Not assigned' }}</p>
+                    <p><strong>Quantity:</strong> {{ asset.quantity }} {{ asset.unit_of_measure or 'number' }}</p>
+                    <p><strong>Age:</strong> {{ asset.age }}</p>
                     <p><strong>Purchased On:</strong> {{ asset.purchased_on }}</p>
                 </div>
                 <div class="col-md-6">
@@ -53,13 +54,16 @@
                         <p class="mt-2"><strong>{{ asset.serial_number }}</strong></p>
                     </div>
                     <br>
-                    <button onclick="printBarcode()" class="btn btn-secondary">Print Barcode</button>
-                    <a href="{{ url_for('regenerate_barcode', asset_id=asset.id) }}" class="btn btn-sm btn-outline-info ml-2" title="Regenerate barcode if image is missing">Regenerate</a>
+                            <button onclick="printBarcode()" class="btn btn-secondary">Print Barcode</button>
+                            {% if session.get('role') == 'admin' %}
+                            <a href="{{ url_for('regenerate_barcode', asset_id=asset.id) }}" class="btn btn-sm btn-outline-info ml-2" title="Regenerate barcode if image is missing">Regenerate</a>
+                            {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
+    {% if session.get('role') == 'admin' %}
     <div class="card mb-4">
         <div class="card-header">
             <h4>Move Asset</h4>
@@ -114,10 +118,87 @@
             </form>
         </div>
     </div>
+    {% endif %}
 
-    <div class="mb-4">
-        <a href="{{ url_for('maintenance_history', asset_id=asset.id) }}" class="btn btn-info">View Maintenance History</a>
-        <a href="{{ url_for('edit_asset', asset_id=asset.id) }}" class="btn btn-warning">Edit Asset</a>
-        <a href="{{ url_for('list_assets') }}" class="btn btn-secondary">Back to Asset List</a>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Movement History</h4>
+        </div>
+        <div class="card-body">
+            {% if movements %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>From Location</th>
+                            <th>From SubLocation</th>
+                            <th>To Location</th>
+                            <th>To SubLocation</th>
+                            <th>Moved By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movement in movements %}
+                        <tr>
+                            <td>{{ movement.movement_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{% if movement.from_location %}{{ movement.from_location.name }}{% else %}-{% endif %}</td>
+                            <td>{% if movement.from_sublocation %}{{ movement.from_sublocation.name }}{% else %}-{% endif %}</td>
+                            <td>{% if movement.to_location %}{{ movement.to_location.name }}{% else %}-{% endif %}</td>
+                            <td>{% if movement.to_sublocation %}{{ movement.to_sublocation.name }}{% else %}-{% endif %}</td>
+                            <td>{{ movement.moved_by or 'System' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No movement history recorded.</p>
+            {% endif %}
+        </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Trace History (Update History)</h4>
+        </div>
+        <div class="card-body">
+            {% if history %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Field</th>
+                            <th>Old Value</th>
+                            <th>New Value</th>
+                            <th>Updated By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr>
+                            <td>{{ record.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ record.field_name }}</td>
+                            <td>{{ record.old_value or '-' }}</td>
+                            <td>{{ record.new_value or '-' }}</td>
+                            <td>{{ record.updated_by or 'System' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No update history recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+
+            <div class="mb-4">
+                <a href="{{ url_for('maintenance_history', asset_id=asset.id) }}" class="btn btn-info">View Maintenance History</a>
+                {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('edit_asset', asset_id=asset.id) }}" class="btn btn-warning">Edit Asset</a>
+                {% endif %}
+                <a href="{{ url_for('list_assets') }}" class="btn btn-secondary">Back to Asset List</a>
+            </div>
 {% endblock %}

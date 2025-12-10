@@ -9,6 +9,7 @@
                 <select id="status" name="status" class="custom-select">
                     <option value="" {% if not request.args.get('status') %}selected{% endif %}>All</option>
                     <option value="Active" {% if request.args.get('status') == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Free" {% if request.args.get('status') == 'Free' %}selected{% endif %}>Free</option>
                     <option value="Under Repair" {% if request.args.get('status') == 'Under Repair' %}selected{% endif %}>Under Repair</option>
                     <option value="Disposed" {% if request.args.get('status') == 'Disposed' %}selected{% endif %}>Disposed</option>
                 </select>
@@ -64,28 +65,48 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Type</th>
                 <th>Category</th>
                 <th>SubCategory</th>
                 <th>Location</th>
                 <th>SubLocation</th>
                 <th>Status</th>
+                <th>Assigned To</th>
+                <th>Print Barcode</th>
             </tr>
         </thead>
         <tbody>
             {% for asset in assets %}
             <tr>
                 <td><a href="{{ url_for('asset_detail', asset_id=asset.id) }}">{{ asset.name }}</a></td>
-                <td>{{ asset.type }}</td>
                 <td>{{ asset.category.name }}</td>
                 <td>{{ asset.subcategory.name }}</td>
                 <td>{{ asset.location.name }}</td>
                 <td>{{ asset.sub_location.name }}</td>
-                <td>{{ asset.status }}</td>
+                <td>
+                    <span class="badge badge-{% if asset.status == 'Active' %}success{% elif asset.status == 'Free' %}info{% elif asset.status == 'Under Repair' %}warning{% else %}danger{% endif %}">
+                        {{ asset.status }}
+                    </span>
+                </td>
+                <td>{{ asset.assigned_to or '-' }}</td>
+                <td>
+                    <button onclick="printBarcode({{ asset.id }}, '{{ asset.serial_number }}')" class="btn btn-sm btn-secondary">Print</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
+    <script>
+        function printBarcode(assetId, serialNumber) {
+            // Open print barcode page in new window
+            var printWindow = window.open('{{ url_for("print_barcode", asset_id=0) }}'.replace('0', assetId), '_blank');
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+    </script>
 
-    <a href="{{ url_for('register_asset') }}" class="btn btn-success">Register New Asset</a>
+            {% if session.get('role') == 'admin' %}
+            <a href="{{ url_for('register_asset') }}" class="btn btn-success">Register New Asset</a>
+            {% endif %}
 {% endblock %}

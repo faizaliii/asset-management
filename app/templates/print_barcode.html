@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Barcode - {{ asset.serial_number }}</title>
+    <style>
+        @media print {
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        body {
+            text-align: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .barcode-container {
+            margin: 50px auto;
+            max-width: 400px;
+        }
+        .barcode-image {
+            max-width: 100%;
+            height: auto;
+        }
+        .serial-number {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .asset-name {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="barcode-container">
+        <img src="{{ url_for('static', filename='barcodes/' + asset.serial_number + '.png') }}" alt="{{ asset.serial_number }}" class="barcode-image" onerror="this.style.display='none'; alert('Barcode image not found. Please regenerate barcode first.');">
+        <div class="serial-number">{{ asset.serial_number }}</div>
+        <div class="asset-name">{{ asset.name }}</div>
+    </div>
+    <div class="no-print" style="margin-top: 20px;">
+        <button onclick="window.print()" class="btn btn-primary">Print</button>
+        <button onclick="window.close()" class="btn btn-secondary">Close</button>
+    </div>
+    <script>
+        // Auto-print when page loads
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+    </script>
+</body>
+</html>
+

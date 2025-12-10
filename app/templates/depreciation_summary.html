@@ -1,28 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Depreciation Summary</title>
-</head>
-<body>
-    <h1>Depreciation Summary</h1>
-    <table>
-        <tr>
-            <th>Asset Name</th>
-            <th>Purchase Price</th>
-            <th>Depreciation Value</th>
-            <th>Book Value</th>
-        </tr>
-        {% for item in depreciation_data %}
-        <tr>
-            <td>{{ item.asset.name }}</td>
-            <td>{{ item.asset.purchase_price }}</td>
-            <td>{{ item.depreciation_value }}</td>
-            <td>{{ item.book_value }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <a href="{{ url_for('index') }}">Back to Asset List</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="mb-4">Asset Summary</h1>
+    <div class="alert alert-info">
+        <p class="mb-0">Depreciation tracking has been removed. This page shows all assets.</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Asset Name</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Age</th>
+                    <th>Purchased On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                <tr>
+                    <td><a href="{{ url_for('asset_detail', asset_id=asset.id) }}">{{ asset.name }}</a></td>
+                    <td>{{ asset.category.name }}</td>
+                    <td>{{ asset.location.name }}</td>
+                    <td>
+                        <span class="badge badge-{% if asset.status == 'Active' %}success{% elif asset.status == 'Free' %}info{% elif asset.status == 'Under Repair' %}warning{% else %}danger{% endif %}">
+                            {{ asset.status }}
+                        </span>
+                    </td>
+                    <td>{{ asset.age if asset.purchased_on else 'N/A' }}</td>
+                    <td>{{ asset.purchased_on }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{{ url_for('list_assets') }}" class="btn btn-secondary">Back to Asset List</a>
+{% endblock %}
